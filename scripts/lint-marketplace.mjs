@@ -205,6 +205,13 @@ function checkPlugin(abs, rel, expectedName) {
     err(`${rel}/CHANGELOG.md`, `no entry for the current version ${p.version}`);
   }
 
+  // Listed under "Required structure" in docs/PLUGIN-GUIDELINES.md. The manifest
+  // description sells the plugin in /plugin; the README is where an engineer finds out
+  // what it actually does and who to ask.
+  if (!existsSync(join(abs, "README.md"))) {
+    err(rel, "missing README.md — say what the plugin does and who owns it (see docs/PLUGIN-GUIDELINES.md)");
+  }
+
   checkDependencies(p, pj);
 
   // Absolute paths: fine on the author's laptop, broken for every installer.
@@ -292,8 +299,13 @@ else {
 if (!m.owner || typeof m.owner !== "object" || !m.owner.name) {
   err(MANIFEST, 'missing "owner" object with a "name"');
 }
-if (m.metadata?.pluginRoot !== "./plugins") {
-  err(MANIFEST, `metadata.pluginRoot must be "./plugins" (found ${JSON.stringify(m.metadata?.pluginRoot)})`);
+// metadata.pluginRoot does NOT prepend to `source` — verified against Claude Code
+// 2.1.211: with pluginRoot "./plugins" and source "./demo", install failed with
+// "Source path does not exist: <repo>/demo". It is inert, and believing otherwise
+// produces sources that fail schema validation and never install. Flag it so nobody
+// reintroduces the assumption.
+if (m.metadata && "pluginRoot" in m.metadata) {
+  err(MANIFEST, 'remove metadata.pluginRoot — it is inert. `source` resolves from the repo root, not from pluginRoot, so it does not prepend anything. Write the full "./plugins/<name>" path in each entry\'s source.');
 }
 
 const entries = Array.isArray(m.plugins) ? m.plugins : null;
@@ -322,10 +334,13 @@ for (const [i, e] of (entries ?? []).entries()) {
   if ("version" in e) {
     err(at, `remove "version" — it is set in plugins/${e.name}/.claude-plugin/plugin.json, which silently overrides it`);
   }
+  // `source` is a repo-root-relative path and must start with "./" — the schema rejects
+  // a bare name outright ("plugins.N.source: Invalid input"), and nothing prepends a
+  // plugin root for you.
   if (!("source" in e)) err(at, 'missing "source"');
   else if (typeof e.source !== "string") err(at, "source must be a string (this marketplace hosts plugins inline)");
-  else if (e.source !== e.name) {
-    err(at, `source must be the bare plugin name "${e.name}" (metadata.pluginRoot prepends ./plugins), found "${e.source}"`);
+  else if (e.source !== `./${PLUGIN_ROOT}/${e.name}`) {
+    err(at, `source must be "./${PLUGIN_ROOT}/${e.name}" — a repo-root-relative path, found "${e.source}". A bare name fails \`claude plugin validate --strict\`, and nothing prepends a plugin root.`);
   }
   for (const k of Object.keys(e)) {
     if (!ENTRY_KEYS.has(k)) err(at, `unknown field "${k}"`);

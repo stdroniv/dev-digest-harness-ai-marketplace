@@ -12,6 +12,27 @@ Claude Code **caches plugins by version string**. That single fact explains ever
 
 Internalize that and the rest follows.
 
+### Two axes, not one
+
+The plugin version and the marketplace are versioned independently, and confusing them is
+the most common way to think a change shipped when it didn't.
+
+- A **plugin's `version`** describes the behavior of that one plugin. It is the unit users
+  install and cache.
+- A **commit or tag on this repo** fixes the state of the *catalog* — which plugins exist,
+  where their sources point, what the entries say. It says nothing about what any
+  installed plugin does.
+
+Two consequences worth stating outright:
+
+- **Changing one plugin does not version another.** An `engineering-paved-path` release
+  leaves `sdd-engineering`'s version untouched, even though SDD depends on it — until SDD
+  widens its own compatibility range, which is itself a change to SDD and needs its own
+  bump.
+- **Refreshing the marketplace does not update an installed plugin.** A refresh re-reads
+  the catalog; it does not touch a plugin already cached on disk. That still takes
+  `claude plugin update <plugin>` (see [Update](#update)).
+
 ## SemVer
 
 Every plugin sets `version` in its own `.claude-plugin/plugin.json` and moves on its own

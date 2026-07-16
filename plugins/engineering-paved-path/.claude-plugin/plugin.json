@@ -1,0 +1,12 @@
+{
+  "name": "engineering-paved-path",
+  "displayName": "Engineering Paved Path",
+  "description": "The single source for shared technical skills — TypeScript, React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, Testing Library, Mermaid. Install so agents and engineers route to one copy of each convention instead of drifting private copies.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Platform Engineering",
+    "email": "platform-eng@example.com"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["typescript", "react", "nextjs", "fastify", "drizzle", "postgresql", "zod", "testing", "conventions"]
+}
