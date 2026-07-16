@@ -1,0 +1,12 @@
+{
+  "name": "dev-digest-harness",
+  "owner": {
+    "name": "Platform Engineering",
+    "email": "platform-eng@example.com"
+  },
+  "description": "Internal Claude Code plugins for shared engineering workflows.",
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": []
+}

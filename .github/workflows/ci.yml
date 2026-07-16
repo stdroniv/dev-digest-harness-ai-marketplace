@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Required. The version-bump check needs a merge-base, and the default
+          # depth-1 checkout has none — the check would degrade to a silent skip,
+          # which is the exact failure it exists to prevent. The linter fails hard
+          # when CI is set and BASE_REF cannot be resolved, so this stays honest.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Lint marketplace structure
+        env:
+          BASE_REF: origin/${{ github.base_ref || 'main' }}
+        run: node scripts/lint-marketplace.mjs
+
+      - name: Validate plugin manifests
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for dir in plugins/*/; do
+            echo "== $dir"
+            claude plugin validate "$dir" --strict
+          done
+
+      - name: Validate reference fixture
+        run: claude plugin validate tests/fixtures/valid-plugin --strict
+
+      - name: Validate marketplace manifest
+        run: |
+          set -euo pipefail
+          # An empty registry is valid but warns ("Marketplace has no plugins defined"),
+          # and --strict promotes that warning to an error. Use --strict only once the
+          # first plugin lands; this needs no edit when it does.
+          if [ -n "$(find plugins -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]; then
+            claude plugin validate . --strict
+          else
+            echo "plugins/ is empty — validating without --strict (see comment above)"
+            claude plugin validate .
+          fi

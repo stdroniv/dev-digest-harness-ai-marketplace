@@ -1,0 +1,5 @@
+{
+  "name": "wrong-name",
+  "description": "Deliberately broken fixture. The linter MUST reject this. Do not copy it.",
+  "version": "1.0"
+}

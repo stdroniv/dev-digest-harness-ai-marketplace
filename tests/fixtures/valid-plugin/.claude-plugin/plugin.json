@@ -1,0 +1,12 @@
+{
+  "name": "valid-plugin",
+  "displayName": "Valid Plugin",
+  "description": "Reference layout for plugins in this marketplace. Copy this directory to start a new plugin.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Platform Engineering",
+    "email": "platform-eng@example.com"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["example", "template"]
+}

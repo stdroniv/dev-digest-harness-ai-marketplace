@@ -1,0 +1,32 @@
+# Ownership is the governance model for this marketplace. Two tiers:
+#
+#   Autonomy for updates    — the owning team reviews changes to its own plugin.
+#   Governance for additions — adding a plugin necessarily edits marketplace.json,
+#                              which pulls in platform engineering automatically.
+#
+# CODEOWNERS is last-match-wins, so a PR touching only plugins/foo/** needs just
+# @<org>/foo-team, while a PR adding a plugin also touches the registry below and
+# therefore requires platform engineering too. No extra process needed.
+#
+# TODO(setup): replace @<org>/platform-eng with the real team slug before relying on
+# this. GitHub SILENTLY IGNORES owners it cannot resolve — an unresolvable team makes
+# governance look configured while enforcing nothing. Until real teams exist, use a
+# concrete username (e.g. @stdroniv).
+#
+# Requires branch protection with "Require review from Code Owners" enabled.
+
+*                                   @<org>/platform-eng
+
+# --- Governance for additions: platform engineering ---------------------------
+/.claude-plugin/marketplace.json    @<org>/platform-eng
+/.github/                           @<org>/platform-eng
+/scripts/                           @<org>/platform-eng
+/tests/                             @<org>/platform-eng
+/CONTRIBUTING.md                    @<org>/platform-eng
+/SECURITY.md                        @<org>/platform-eng
+/docs/                              @<org>/platform-eng
+
+# --- Autonomy for updates: one line per plugin, added as plugins land ---------
+# The linter fails any plugin without an owner here.
+#
+# /plugins/<name>/                  @<org>/<owning-team>
