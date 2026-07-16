@@ -69,13 +69,35 @@ go stale.
 **Never set `version` in the marketplace entry.** `plugin.json` silently wins over it, so
 a value there is invisible and misleading. The linter rejects it.
 
+**Do not list component paths.** `skills/`, `agents/`, and `commands/` load from the plugin
+root by convention. The manifest *does* accept a `skills` array, but it only restates the
+default — and its `agents` counterpart takes **file** paths, not a directory: `"agents":
+["./agents"]` fails validation with `agents: Invalid input`, and the form that does
+validate (`["./agents/spec-creator.md", …]`) has to be re-edited every time an agent is
+added. Ship the directories; say nothing in the manifest.
+
+**There is no `compatibility` field**, and no other supported way to declare a minimum
+Claude Code version. `claude plugin validate --strict` accepts the key but reports it
+unknown and "safe to keep" — i.e. ignored at load time, which is the opposite of a floor.
+A plugin that needs a minimum version documents it in a `COMPATIBILITY.md` and says what
+breaks below it; see [`plugins/sdd-engineering/COMPATIBILITY.md`](../plugins/sdd-engineering/COMPATIBILITY.md).
+Unknown fields are ignored rather than rejected, so anything you invent here fails silently
+while looking configured.
+
 The marketplace entry stays minimal — the registry holds pointers, the plugin holds truth:
 
 ```jsonc
-{ "name": "architecture-review", "source": "architecture-review", "description": "…", "category": "…" }
+{ "name": "architecture-review", "source": "./plugins/architecture-review", "description": "…", "category": "…" }
 ```
 
-`source` is the **bare plugin name**; `metadata.pluginRoot` already prepends `./plugins`.
+`source` is a **repo-root-relative path** and must start with `./`. A bare name is rejected
+by the schema (`plugins.N.source: Invalid input`), so a marketplace using one fails
+`claude plugin validate . --strict` and can never be added.
+
+**Nothing prepends a plugin root.** `metadata.pluginRoot` is inert — it does not affect
+resolution. Verified against Claude Code 2.1.211: with `pluginRoot` set to `./plugins` and
+`source` set to `./demo`, install fails with `Source path does not exist: <repo>/demo`. Do
+not set it; write the full path in `source`. The linter rejects it.
 
 ## Skills
 

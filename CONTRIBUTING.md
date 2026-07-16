@@ -40,10 +40,11 @@ then has to be removed breaks existing installs (see [Renaming and removal](#ren
 
 4. **Register it** in `.claude-plugin/marketplace.json`:
    ```jsonc
-   { "name": "your-plugin", "source": "your-plugin", "description": "…", "category": "…" }
+   { "name": "your-plugin", "source": "./plugins/your-plugin", "description": "…", "category": "…" }
    ```
-   `source` is the **bare plugin name** — `metadata.pluginRoot` already prepends
-   `./plugins`. Do **not** add a `version` field here (see below).
+   `source` is a **repo-root-relative path** starting with `./` — nothing prepends a
+   plugin root for you. A bare name is rejected by the schema and never installs. Do
+   **not** add a `version` field here (see below).
 
 5. **Claim ownership** in `.github/CODEOWNERS`:
    ```

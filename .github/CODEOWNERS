@@ -30,3 +30,12 @@
 # The linter fails any plugin without an owner here.
 #
 # /plugins/<name>/                  @<org>/<owning-team>
+#
+# NOTE: these use a concrete username per the TODO above — @<org>/platform-eng does not
+# resolve yet, and an unresolvable owner enforces nothing while looking like it does.
+# Swap to real team slugs once they exist.
+
+/plugins/sdd-engineering/           @stdroniv
+/plugins/research-tools/            @stdroniv
+/plugins/architecture-review/       @stdroniv
+/plugins/engineering-paved-path/    @stdroniv

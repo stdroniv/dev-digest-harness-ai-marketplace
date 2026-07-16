@@ -41,6 +41,21 @@ jobs:
       - name: Validate reference fixture
         run: claude plugin validate tests/fixtures/valid-plugin --strict
 
+      - name: Lint reference fixture (must pass)
+        run: node scripts/lint-marketplace.mjs --fixture tests/fixtures/valid-plugin
+
+      - name: Lint broken fixture (must fail)
+        # The linter is the main thing keeping this registry consistent, and a change that
+        # silently stops catching anything would otherwise sail through every check above.
+        # This asserts the negative path still fires.
+        run: |
+          set -euo pipefail
+          if node scripts/lint-marketplace.mjs --fixture tests/fixtures/broken-plugin; then
+            echo "::error::broken-plugin fixture passed the linter — a check has regressed"
+            exit 1
+          fi
+          echo "broken-plugin correctly rejected"
+
       - name: Validate marketplace manifest
         run: |
           set -euo pipefail

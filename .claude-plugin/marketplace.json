@@ -5,8 +5,30 @@
     "email": "platform-eng@example.com"
   },
   "description": "Internal Claude Code plugins for shared engineering workflows.",
-  "metadata": {
-    "pluginRoot": "./plugins"
-  },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-driven development end to end: request to agreed spec, verified plan, implementation, and review gate — with human approval at the two moments that matter.",
+      "category": "workflow"
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "Read-only research subagent for codebase and web lookups, returning a short answer with file:line or URL citations instead of prose.",
+      "category": "research"
+    },
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "Read-only architectural review: layering, dependency direction, coupling, module boundaries, and where business logic belongs.",
+      "category": "review"
+    },
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "The single source for shared technical skills — TypeScript, React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, Testing Library, Mermaid.",
+      "category": "conventions"
+    }
+  ]
 }

@@ -16,15 +16,24 @@ Admins can auto-inject the marketplace so nobody has to run the first command �
 
 ## Available plugins
 
-*None yet.* This repo currently holds the registry, CI, and conventions so that the first
-plugin lands on solid ground. Yours could be the first — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
-
-<!-- Add a row per plugin as they land:
 | Plugin | Owner | Description |
 |---|---|---|
-| `example` | @<org>/team | What it does |
--->
+| [`sdd-engineering`](plugins/sdd-engineering/) | @stdroniv | Spec-driven development end to end: request → agreed spec → verified plan → implementation → review gate, with human approval at the two moments that matter. |
+| [`research-tools`](plugins/research-tools/) | @stdroniv | Read-only research subagent for codebase and web lookups — short answers with `file:line` or URL citations, not prose. |
+| [`architecture-review`](plugins/architecture-review/) | @stdroniv | Read-only architectural review: layering, dependency direction, coupling, module boundaries. |
+| [`engineering-paved-path`](plugins/engineering-paved-path/) | @stdroniv | The single source for shared technical skills — TypeScript, React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, Testing Library, Mermaid. |
+
+`sdd-engineering` depends on the other three at `^1.0.0`; installing it pulls them in. It
+needs Claude Code >= 2.1.196 for that resolution to happen — see
+[its COMPATIBILITY.md](plugins/sdd-engineering/COMPATIBILITY.md). The other three run
+anywhere.
+
+Start with:
+
+```
+/plugin install sdd-engineering@dev-digest-harness
+/sdd-engineering:ship-feature <your feature request>
+```
 
 ## Layout
 

@@ -1,0 +1,12 @@
+{
+  "name": "research-tools",
+  "displayName": "Research Tools",
+  "description": "Read-only research subagent that answers a question about this codebase or the web and returns a short, strictly-formatted answer with citations. Install when you want lookups that cite file:line or a URL instead of prose.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Platform Engineering",
+    "email": "platform-eng@example.com"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["research", "codebase-search", "web-search", "citations"]
+}
