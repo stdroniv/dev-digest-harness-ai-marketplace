@@ -42,12 +42,20 @@ const RESERVED = new Set([
 const ENTRY_KEYS = new Set([
   "name", "source", "displayName", "description", "author", "homepage",
   "repository", "license", "keywords", "category", "tags", "strict",
-  "relevance", "defaultEnabled",
+  "relevance", "defaultEnabled", "dependencies",
 ]);
 
 // Only plugin.json belongs in .claude-plugin/. These live at the plugin root; putting
 // them under .claude-plugin/ is the mistake Anthropic's docs call out as #1.
 const ROOT_ONLY = ["skills", "agents", "commands", "hooks"];
+
+// Machine-specific paths in an executable surface work for the author and fail for
+// everyone else. ${CLAUDE_PLUGIN_ROOT} is the supported way to reference plugin files.
+const ABSOLUTE_PATH = /(?:^|["'\s=:(])(\/(?:Users|home|Volumes|opt|usr\/local)\/|[A-Za-z]:\\{1,2})/;
+
+// Files where an absolute path actually executes. Prose is excluded on purpose: docs
+// legitimately mention paths like /etc/claude-code/managed-settings.json.
+const EXECUTABLE_SURFACES = [".mcp.json", ".lsp.json", "settings.json", "hooks/hooks.json", "monitors/monitors.json"];
 
 const errors = [];
 const notes = [];
@@ -101,6 +109,55 @@ function frontmatter(text) {
 // Plugin structure (also used by --fixture)
 // ---------------------------------------------------------------------------
 
+// Set from the manifest before plugins are checked. Null in --fixture mode, where a
+// single directory is linted with no registry to resolve dependencies against.
+let registryNames = null;
+let allowedMarketplaces = null;
+
+/** Dependencies resolve within this marketplace unless `marketplace` is set, and a
+ *  cross-marketplace dependency is blocked at install unless the root marketplace
+ *  allowlists it. Both failures are install-time, so catch them here instead. */
+function checkDependencies(p, pj) {
+  if (!("dependencies" in p)) return;
+  if (!Array.isArray(p.dependencies)) {
+    err(pj, '"dependencies" must be an array');
+    return;
+  }
+  for (const [i, d] of p.dependencies.entries()) {
+    const at = `${pj} dependencies[${i}]`;
+    const dep = typeof d === "string" ? { name: d } : d;
+    if (typeof d !== "string" && (typeof d !== "object" || d === null)) {
+      err(at, 'must be a plugin name or an object with { name, version?, marketplace? }');
+      continue;
+    }
+    if (!dep.name) {
+      err(at, 'missing "name"');
+      continue;
+    }
+    for (const k of Object.keys(dep)) {
+      if (!["name", "version", "marketplace"].includes(k)) err(at, `unknown field "${k}"`);
+    }
+    if (dep.name === p.name) err(at, "a plugin cannot depend on itself");
+
+    if (dep.marketplace) {
+      if (allowedMarketplaces && !allowedMarketplaces.has(dep.marketplace)) {
+        err(at, `depends on "${dep.marketplace}" — add it to allowCrossMarketplaceDependenciesOn in ${MANIFEST}, or install fails with a cross-marketplace error`);
+      }
+    } else if (registryNames && !registryNames.has(dep.name)) {
+      err(at, `"${dep.name}" is not in this marketplace — register it, or set "marketplace" to name where it lives`);
+    }
+
+    // Constraints resolve against git tags named <plugin>--v<version>. A constraint on
+    // an untagged plugin disables the dependent with no-matching-tag at install.
+    if (dep.version && !/^[~^=<>]*\s*\d+(\.\d+)*(\.\d+)?(-[0-9A-Za-z.-]+)?(\s*\|\|\s*.+)?$/.test(dep.version.trim())) {
+      err(at, `version "${dep.version}" is not a recognizable semver range (e.g. ~2.1.0, ^2.0, >=1.4, =2.1.0)`);
+    }
+    if (dep.version && !dep.marketplace) {
+      notes.push(`${p.name} constrains "${dep.name}" to ${dep.version}; that only resolves if ${dep.name} releases are tagged (claude plugin tag --push). See docs/RELEASES.md.`);
+    }
+  }
+}
+
 function checkPlugin(abs, rel, expectedName) {
   const meta = join(abs, ".claude-plugin");
 
@@ -132,8 +189,34 @@ function checkPlugin(abs, rel, expectedName) {
     err(pj, `name "${p.name}" must match its directory "${expectedName}" (plugin names are immutable)`);
   }
 
+  // A plugin whose manifest is only a dependencies array is a valid curated bundle:
+  // installing it pulls in the whole set. Such a plugin ships no surfaces of its own.
+  const isBundle = Array.isArray(p.dependencies) && p.dependencies.length > 0;
   const surfaces = ["skills", "agents", "commands"].filter((d) => isDir(join(abs, d)));
-  if (surfaces.length === 0) err(rel, "plugin has no skills/, agents/, or commands/ — it does nothing");
+  if (surfaces.length === 0 && !isBundle) {
+    err(rel, "plugin has no skills/, agents/, or commands/ — it does nothing (a bundle plugin needs a non-empty dependencies array)");
+  }
+
+  // Every release needs a readable history; pinned semver is only useful if someone
+  // can tell what changed between two versions.
+  if (!existsSync(join(abs, "CHANGELOG.md"))) {
+    err(rel, "missing CHANGELOG.md — every version bump must record what changed (see docs/RELEASES.md)");
+  } else if (p.version && !readFileSync(join(abs, "CHANGELOG.md"), "utf8").includes(p.version)) {
+    err(`${rel}/CHANGELOG.md`, `no entry for the current version ${p.version}`);
+  }
+
+  checkDependencies(p, pj);
+
+  // Absolute paths: fine on the author's laptop, broken for every installer.
+  for (const f of EXECUTABLE_SURFACES) {
+    const abs_f = join(abs, f);
+    if (!existsSync(abs_f)) continue;
+    for (const [i, line] of readFileSync(abs_f, "utf8").split(/\r?\n/).entries()) {
+      if (ABSOLUTE_PATH.test(line)) {
+        err(`${rel}/${f}:${i + 1}`, `absolute path — use \${CLAUDE_PLUGIN_ROOT} so it resolves on every machine: ${line.trim()}`);
+      }
+    }
+  }
 
   const skillsDir = join(abs, "skills");
   if (isDir(skillsDir)) {
@@ -263,6 +346,11 @@ for (const name of onDisk) {
 
 const coPath = join(REPO, ".github/CODEOWNERS");
 const codeowners = existsSync(coPath) ? readFileSync(coPath, "utf8") : (err(".github/CODEOWNERS", "missing"), "");
+
+registryNames = new Set(named.keys());
+allowedMarketplaces = new Set(
+  Array.isArray(m.allowCrossMarketplaceDependenciesOn) ? m.allowCrossMarketplaceDependenciesOn : [],
+);
 
 for (const name of onDisk) {
   checkPlugin(join(REPO, PLUGIN_ROOT, name), `plugins/${name}`, name);

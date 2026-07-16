@@ -1,5 +1,9 @@
 # Contributing a plugin
 
+This is the **path** from idea to merged PR. For the **rules** — naming, required
+structure, manifest fields, dependencies — see [docs/PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md).
+For versioning, tagging, and rollback, see [docs/RELEASES.md](docs/RELEASES.md).
+
 ## First: is it in scope?
 
 **This marketplace is for common, shared problems.** Workflows specific to one team
@@ -28,11 +32,11 @@ then has to be removed breaks existing installs (see [Renaming and removal](#ren
    > the install identity. Renaming later breaks every existing install. Choose carefully
    > now; use `displayName` if you only want to change the label shown in the UI.
 
-3. **Write your skills** in `skills/<skill-name>/SKILL.md`. The frontmatter `description`
-   is the *only* thing Claude reads when deciding whether to invoke a skill, so write it
-   as **when to use this**, not what it is. A vague description fails silently and
-   indistinguishably from a missing skill. Add `disable-model-invocation: true` to make a
-   skill user-only.
+3. **Write your skills** in `skills/<skill-name>/SKILL.md`, and keep `CHANGELOG.md`
+   current. The frontmatter `description` is the *only* thing Claude reads when deciding
+   whether to invoke a skill — write it as **when to use this**, not what it is. See
+   [PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md) for the full rules on naming,
+   structure, dependencies, absolute paths, and secrets.
 
 4. **Register it** in `.claude-plugin/marketplace.json`:
    ```jsonc
@@ -63,9 +67,14 @@ nobody*. It looks exactly like your change was ignored, and there is no error an
 - The version must go **up**. A downgrade re-serves a stale cached copy.
 - README-only changes count. No exceptions — the rule is easier to follow than to argue about.
 - Never set `version` in the marketplace entry: `plugin.json` silently wins and masks it.
+- Record what changed in the plugin's `CHANGELOG.md`. CI rejects a bump with no entry.
 
 CI enforces this by diffing against the merge-base, so a forgotten bump is a red check
 rather than a silent non-delivery.
+
+The same cache behavior means **you cannot roll back by reverting** — a revert re-serves
+the cached bad version. Rollback is always roll-*forward* to a higher version. See
+[docs/RELEASES.md](docs/RELEASES.md).
 
 ## Layout rules
 
@@ -80,11 +89,15 @@ plugins/your-plugin/
 ├── agents/*.md
 ├── hooks/hooks.json       # security review required
 ├── .mcp.json              # security review required
+├── CHANGELOG.md           # required
 └── README.md
 ```
 
 Putting `skills/` or `agents/` under `.claude-plugin/` is the single most common mistake
 — Claude Code will silently not load them. The linter catches it.
+
+Full rules, including dependencies and the ban on absolute paths and secrets:
+[docs/PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md).
 
 ## Testing locally
 
@@ -102,6 +115,13 @@ Before pushing:
 node scripts/lint-marketplace.mjs                              # structure + registry + bump
 claude plugin validate ./plugins/your-plugin --strict          # manifest schema
 ```
+
+Both are required, and neither is sufficient. Also **install it in a real project** and
+exercise every skill, and — for a change to an existing plugin — **update from the previous
+version** to confirm nothing breaks. If a skill's output quality matters, run it against a
+few real cases and paste the results in the PR. Linting proves a plugin parses; it cannot
+tell you the skill produces plausible garbage. See
+[PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md#before-you-request-review).
 
 `claude plugin init <name>` also scaffolds a plugin if you prefer starting from scratch.
 

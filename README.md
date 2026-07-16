@@ -33,11 +33,25 @@ plugin lands on solid ground. Yours could be the first — see
 plugins/<name>/                   # one directory per plugin, full metadata in its plugin.json
 tests/fixtures/valid-plugin/      # canonical reference layout — copy this to start
 scripts/lint-marketplace.mjs      # structural linter (required CI check)
-docs/admin-rollout.md             # fleet rollout and policy
+docs/                             # guidelines, releases, security, admin rollout
 ```
 
 The registry holds only pointers; each plugin owns its metadata and version. That keeps
-plugins independently versioned and independently owned.
+plugins independently versioned and independently owned — a change to one plugin never
+releases another, and this marketplace releases independently of any product.
+
+If a plugin later needs a separate owner or release cadence, its source can move to its own
+repository and the entry becomes `{"source": "github", "repo": "…"}`. Users don't notice.
+
+## Docs
+
+| Doc | What's in it |
+|---|---|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | The path from proposal to merged PR |
+| [docs/PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md) | Naming, required structure, manifest fields, dependencies |
+| [docs/RELEASES.md](docs/RELEASES.md) | SemVer, tags, update, rollback |
+| [SECURITY.md](SECURITY.md) | Permissions, secrets, what to do about a dangerous release |
+| [docs/admin-rollout.md](docs/admin-rollout.md) | Fleet rollout and policy |
 
 ## Contributing
 
@@ -47,7 +61,8 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md). The short version:
   your team's own repo. Check scope with platform engineering first.
 - Copy `tests/fixtures/valid-plugin/` — it is CI-verified, so it never goes stale.
 - **Bump `version` on every change.** Claude Code caches by version string; merging
-  without a bump ships nothing to anyone, silently.
+  without a bump ships nothing to anyone, silently. The same cache means rollback is
+  roll-*forward*, never a revert.
 - Your team owns your plugin via CODEOWNERS. Adding one needs platform engineering review;
   updating one does not.
 
