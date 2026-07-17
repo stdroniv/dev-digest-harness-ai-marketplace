@@ -97,16 +97,20 @@ change touches. Plenty of work matches **no** skill — and skills the host has 
 installed simply do not apply; fall back to the repository's own documented
 conventions and the style of the surrounding code.
 
-| Working on…                                              | Read these skills…                                              |
-|----------------------------------------------------------|----------------------------------------------------------------|
-| A Fastify route, plugin, hook, error handling            | `fastify-best-practices`                                       |
-| DB schema, queries, relations, migrations                | `drizzle-orm-patterns`, `postgresql-table-design`              |
-| Zod schemas / validation (params, body, contracts)       | `zod`                                                          |
-| Next.js pages, routing, RSC boundaries, metadata, data fetching | `next-best-practices`                                    |
-| React components, hooks, state, performance              | `react-best-practices`                                        |
-| React component/hook tests                               | `react-testing-library`                                       |
-| Tricky TS types / generics / tooling                     | `typescript-expert`                                           |
-| A diagram in docs                                        | `mermaid-diagram`                                             |
+**Always name a skill by its full `engineering-paved-path:<skill>` id**, exactly as
+written below. A plugin skill is namespaced by the plugin that ships it; a bare
+`typescript-expert` resolves against nothing and fails as a missing skill.
+
+| Working on…                                                     | Read these skills…                                                                  |
+|-----------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| A Fastify route, plugin, hook, error handling                   | `engineering-paved-path:fastify-best-practices`                                     |
+| DB schema, queries, relations, migrations                       | `engineering-paved-path:drizzle-orm-patterns`, `engineering-paved-path:postgresql-table-design` |
+| Zod schemas / validation (params, body, contracts)              | `engineering-paved-path:zod`                                                        |
+| Next.js pages, routing, RSC boundaries, metadata, data fetching | `engineering-paved-path:next-best-practices`                                        |
+| React components, hooks, state, performance                     | `engineering-paved-path:react-best-practices`                                       |
+| React component/hook tests                                      | `engineering-paved-path:react-testing-library`                                      |
+| Tricky TS types / generics / tooling                            | `engineering-paved-path:typescript-expert`                                          |
+| A diagram in docs                                               | `engineering-paved-path:mermaid-diagram`                                            |
 
 ## Commands — take them from the repository, never from habit
 

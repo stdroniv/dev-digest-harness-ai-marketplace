@@ -4,6 +4,28 @@ All notable changes to this plugin. Newest first. Every version bump needs an en
 the version string is what users receive, so this is the only place they can see what
 they got. See [docs/RELEASES.md](../../docs/RELEASES.md).
 
+## 1.0.1
+
+- **Fixed: every agent dispatch in the pipeline named an id that does not resolve.** A
+  plugin agent is registered as `<plugin>:<agent>` and there is no bare-name fallback, so
+  `subagent_type: implementer` fails with `Agent type 'implementer' not found` — as did
+  every other dispatch `ship-feature` specified. `ship-feature` now carries an **Agent ids**
+  table as the canonical source (`sdd-engineering:implementer`,
+  `research-tools:researcher`, `architecture-review:architecture-reviewer` — note the
+  dependency plugins' prefixes are *not* `sdd-engineering:`), and `spec-creator` and
+  `implementation-planner` name `research-tools:researcher` in full when they delegate.
+- **Fixed: skill routing tables named bare skills.** `zod`, `typescript-expert`, and the
+  rest are namespaced by the plugin that ships them; the tables in `ship-feature`,
+  `implementer`, and `implementation-planner` now name `engineering-paved-path:<skill>`.
+  A plan that named a bare skill handed the same broken id to every downstream implementer.
+  Skills remain **read-on-demand** — no agent declares a `skills:` frontmatter block, which
+  would re-bill every listed skill as cache-read on every turn of an opus agent.
+- Adds eval cases E7–E14, covering the behaviours the E1–E6 set did not: spec clarification
+  and the no-HOW rule (E7), planning against the spec rather than re-deriving it (E8),
+  typed implementer dispatch (E9), the dependency plugin's review gate (E10), AC-vs-code
+  verification (E11), the retro never self-triggering (E12), namespaced id resolution
+  (E13), and non-activation on an unrelated request (E14).
+
 ## 1.0.0
 
 - Initial release. Extracted from the DevDigest harness.

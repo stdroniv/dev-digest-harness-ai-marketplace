@@ -152,7 +152,12 @@ the mismatch in `Observed`.
 
 | Scope                                          | Read these skills…                          |
 |------------------------------------------------|---------------------------------------------|
-| Tricky type-level coupling (TypeScript)        | `typescript-expert` — from the `engineering-paved-path` plugin, if installed |
+| Tricky type-level coupling (TypeScript)        | `engineering-paved-path:typescript-expert` — if that plugin is installed |
+
+Name it by that full id: a plugin skill is namespaced by the plugin that ships it, and a
+bare `typescript-expert` fails as a missing skill. `engineering-paved-path` is **not** a
+dependency of this plugin — it is a soft, if-present reference, so a missing-skill result
+here is a normal "not installed", not an error to report.
 
 Beyond that, prefer whatever architecture skills the host repo installs: if a
 skill documents this repo's layering or boundary rules, read it and cite its

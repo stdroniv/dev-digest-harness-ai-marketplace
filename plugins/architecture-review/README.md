@@ -17,9 +17,10 @@ whole job; deciding what to do about it is yours.
 
 ## Use it
 
-Dispatch the `architecture-reviewer` subagent. Triggers on "architecture review", "review
-the design of…", "check the layering", "is this coupled correctly". Scope can be one
-module, a PR's worth of changes, or the whole tree.
+Dispatch the `architecture-review:architecture-reviewer` subagent — that full id is the
+`subagent_type`; a bare `architecture-reviewer` is rejected. Triggers on "architecture
+review", "review the design of…", "check the layering", "is this coupled correctly". Scope
+can be one module, a PR's worth of changes, or the whole tree.
 
 ## Install
 

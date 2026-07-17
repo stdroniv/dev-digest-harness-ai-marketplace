@@ -218,10 +218,12 @@ Before writing any file, emit a **Clarification response** in this format and st
 ```
 
 **Wait for the user's answers.** For heavy design analysis or external norms, you may
-delegate to a `researcher` (`[code]`/`[web]`) or `Explore` subagent — but keep raw
-exploration out of your context; take back only the conclusion. Do not read the whole
-repo. (`researcher` ships in the `research-tools` plugin and may not be installed; if it
-is unavailable, use `Explore` or your own `Read`/`Grep`/`Glob` instead of failing.)
+delegate to a `research-tools:researcher` (`[code]`/`[web]`) or `Explore` subagent — but
+keep raw exploration out of your context; take back only the conclusion. Do not read the
+whole repo. Spell the researcher's id in full: a bare `researcher` is rejected with
+`Agent type 'researcher' not found`. (It ships in the `research-tools` plugin and may not
+be installed; if it is unavailable, use `Explore` or your own `Read`/`Grep`/`Glob`
+instead of failing.)
 
 ### Step 2 — Investigate (after answers)
 

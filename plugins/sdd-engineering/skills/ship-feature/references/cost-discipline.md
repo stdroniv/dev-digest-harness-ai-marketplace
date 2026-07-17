@@ -91,11 +91,14 @@ Optimise for *fewer, shorter, leaner* agent turns and *zero wasted runs*:
   is one case of a general one: `subagent_type` is what selects the tuned per-agent model, so
   a dispatch with **no** `subagent_type` (or `general-purpose`) silently runs on the
   orchestrator's tier — Opus on an Opus main loop. A real pipeline run dispatched its
-  Wave-4/5 UI-component agents without `subagent_type: implementer`; they ran on Opus (the
-  `/cost` panel's "general-purpose" line, ~8% of usage) while the correctly-typed Waves 1–3 ran
-  Sonnet at equal quality — avoidable spend. Always: code → `subagent_type: implementer`,
-  exploration → `researcher`; then **verify with `/cost`** that the code waves landed under
-  `implementer` (Sonnet), not `general-purpose`.
+  Wave-4/5 UI-component agents without `subagent_type: sdd-engineering:implementer`; they ran
+  on Opus (the `/cost` panel's "general-purpose" line, ~8% of usage) while the correctly-typed
+  Waves 1–3 ran Sonnet at equal quality — avoidable spend. Always: code →
+  `subagent_type: sdd-engineering:implementer`, exploration →
+  `subagent_type: research-tools:researcher`; then **verify with `/cost`** that the code waves
+  landed under `implementer` (Sonnet), not `general-purpose`. **Spell each id in full** — a
+  plugin agent is namespaced by the plugin that ships it, and a bare `implementer` is rejected
+  outright (`Agent type 'implementer' not found`), which is the loud cousin of this quiet bug.
 - **The Opus orchestrator is itself the single biggest line — keep it short.** `/cost` on that
   run: **~71% of $ was Opus** and **~65% of usage sat above 150k context**, dominated by the
   main loop's own re-billed transcript (its cache-read rivalled *all* subagents combined). So

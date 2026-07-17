@@ -26,12 +26,40 @@ the stages together: the **spec** (the WHAT/WHY) and the **plan** (the HOW); the
 locations come from Step 0.5, defaulting to `specs/SPEC-NN-<date>-<slug>.md` and
 `docs/plans/<slug>.md`.
 
+## Agent ids — dispatch by the namespaced id, always
+
+**A plugin agent is registered under `<plugin>:<agent>`, and there is no bare-name
+fallback.** `subagent_type: implementer` is not a mis-tier — it is a hard error:
+
+```
+Agent type 'implementer' not found. Available agents: architecture-review:architecture-reviewer,
+… sdd-engineering:implementer, …
+```
+
+These are the ids. Copy them exactly; this table is the canonical source, and the bare
+role names used in the prose below are shorthand for these:
+
+| Role (shorthand below) | `subagent_type` to dispatch |
+|---|---|
+| `researcher` | `research-tools:researcher` |
+| `spec-creator` | `sdd-engineering:spec-creator` |
+| `implementation-planner` | `sdd-engineering:implementation-planner` |
+| `spec-conformance` | `sdd-engineering:spec-conformance` |
+| `implementer` | `sdd-engineering:implementer` |
+| `plan-verifier` | `sdd-engineering:plan-verifier` |
+| `architecture-reviewer` | `architecture-review:architecture-reviewer` |
+
+The last two come from **dependency plugins** (`research-tools`, `architecture-review`) —
+their prefix is *not* `sdd-engineering:`. Never guess a prefix: read the exact id from the
+available-agent list your `Task` tool exposes.
+
 ## Which agents are present
 
 Not every stage's agent is guaranteed to be installed. Three stages are **optional**:
-`test-writer` (Step 6), `security-reviewer` (Step 7), and `doc-writer` (Step 9). The rest
-— `researcher`, `spec-creator`, `implementation-planner`, `spec-conformance`,
-`implementer`, `plan-verifier`, `architecture-reviewer` — always are.
+`test-writer` (Step 6), `security-reviewer` (Step 7), and `doc-writer` (Step 9) — they
+ship in no plugin in this marketplace, so their ids depend on whoever provides them; find
+them in the available-agent list rather than assuming a prefix. The rest — the seven in
+the table above — always are.
 
 **Before dispatching an optional agent, check it exists**: look for its `subagent_type` in
 the available-agent list your `Task` tool exposes. If it is absent, **skip that step** —
@@ -118,10 +146,11 @@ lookup and feed its answer into the spec or plan. Prefix the ask with `[code]` o
 `[web]` to force the search type. **Skip this** when the spec-creator's or the
 `implementation-planner` agent's own reading will clearly suffice — don't pad the pipeline.
 
-**Always spawn the tiered `researcher` (Sonnet) for exploration — never
-`general-purpose`, or a bare `Agent`/`Task` with no `subagent_type`.** Those default to the
-orchestrator's tier (usually Opus), so a cheap Sonnet lookup silently becomes an Opus one;
-pass `model: haiku` for a reasoning-light sweep. This is the same tiering rule Step 5
+**Always spawn the tiered `researcher` (Sonnet) for exploration — as
+`subagent_type: research-tools:researcher` — never `general-purpose`, or a bare
+`Agent`/`Task` with no `subagent_type`.** Those default to the orchestrator's tier (usually
+Opus), so a cheap Sonnet lookup silently becomes an Opus one; pass `model: haiku` for a
+reasoning-light sweep. This is the same tiering rule Step 5
 applies to code work — see the cost-discipline reference.
 
 ## Step 2 — spec-creator, then STOP at the spec approval gate
@@ -208,14 +237,22 @@ small piece, not a whole wave.
 
 Once approved, execute the plan:
 
-**Every code-writing dispatch MUST pass `subagent_type: implementer`** (as Step 1 requires
-`researcher` for exploration). A bare `Agent`/`Task` with no `subagent_type` silently runs
-as `general-purpose` at the orchestrator's tier — on an Opus main loop that means
-Opus-priced mechanical component builds. In one real `ship-feature` run the Wave-4/5
-component dispatches omitted it and ran on Opus (surfacing as the `/cost` panel's
-"general-purpose" subagent line), while the correctly-typed Waves 1–3 ran Sonnet at equal
-quality — the single largest avoidable cost of that run. Verify tiering after a fan-out:
-`/cost` should show the code waves under `implementer` (Sonnet), not `general-purpose`.
+**Every code-writing dispatch MUST pass `subagent_type: sdd-engineering:implementer`** (as
+Step 1 requires `research-tools:researcher` for exploration). Two distinct failures ride on
+getting this exactly right:
+
+- **A bare `implementer` is rejected outright** — `Agent type 'implementer' not found`.
+  There is no bare-name fallback (see [Agent ids](#agent-ids--dispatch-by-the-namespaced-id-always)).
+- **No `subagent_type` at all** silently runs as `general-purpose` at the orchestrator's
+  tier — on an Opus main loop, Opus-priced mechanical component builds. In one real
+  `ship-feature` run the Wave-4/5 component dispatches omitted it and ran on Opus
+  (surfacing as the `/cost` panel's "general-purpose" subagent line), while the
+  correctly-typed Waves 1–3 ran Sonnet at equal quality — the single largest avoidable
+  cost of that run.
+
+The rejection is loud and the mis-tier is silent, so the second is the one that gets you.
+Verify tiering after a fan-out: `/cost` should show the code waves under `implementer`
+(Sonnet), not `general-purpose`.
 
 - **Single-agent plan** — spawn one `implementer` with the plan path. It writes the source
   and self-verifies by running the project profile's typecheck / lint / build commands and
@@ -418,10 +455,17 @@ what to change next time — the user can run `/sdd-engineering:workflow-retro`.
   test-writer to change source. If a reviewer "suggests a rewrite", that's a direction for
   the implementer, not a patch to apply yourself.
 - **Let the technical skills do the domain work.** Don't restate framework guidance in a
-  prompt — point the agent at the skill for the stack it's touching (e.g.
-  `typescript-expert`, `zod`, `fastify-best-practices`, `drizzle-orm-patterns`,
-  `postgresql-table-design`, `react-best-practices`, `next-best-practices`,
-  `react-testing-library`, `mermaid-diagram`), where one is installed and relevant.
+  prompt — point the agent at the skill for the stack it's touching, where one is
+  installed and relevant. **Always use the skill's full namespaced id**, since these ship
+  in the `engineering-paved-path` plugin: `engineering-paved-path:typescript-expert`,
+  `engineering-paved-path:zod`, `engineering-paved-path:fastify-best-practices`,
+  `engineering-paved-path:drizzle-orm-patterns`,
+  `engineering-paved-path:postgresql-table-design`,
+  `engineering-paved-path:react-best-practices`,
+  `engineering-paved-path:next-best-practices`,
+  `engineering-paved-path:react-testing-library`,
+  `engineering-paved-path:mermaid-diagram`. A bare `zod` resolves against nothing and
+  fails as a missing skill.
 
 ## Cost & robustness discipline (keep the pipeline cheap)
 

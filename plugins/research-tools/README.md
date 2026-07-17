@@ -17,7 +17,8 @@ It is read-only by construction — `Read, Grep, Glob, WebSearch, WebFetch`. It 
 
 ## Use it
 
-Dispatch the `researcher` subagent with a question. Prefix to force the search type:
+Dispatch the `research-tools:researcher` subagent with a question — that full id is the
+`subagent_type`; a bare `researcher` is rejected. Prefix to force the search type:
 
 - `[code] Where is the retry policy for the queue consumer defined, and what backs it off?`
 - `[web] What changed in the Fastify 5 error-handler contract vs 4?`
