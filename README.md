@@ -4,6 +4,11 @@ Our internal [Claude Code](https://code.claude.com/docs) plugin marketplace: a p
 catalog of shared agent workflows — skills, agents, hooks, and MCP servers — that any
 engineer can install.
 
+**Browse it: <https://stdroniv.github.io/dev-digest-harness-ai-marketplace/>** — search
+every plugin and skill, read what they do, and copy the command that installs them. The
+site is generated from this repository, so it is never edited by hand; see
+[docs/SITE-SPEC.md](docs/SITE-SPEC.md).
+
 ## Install
 
 ```
@@ -42,6 +47,8 @@ Start with:
 plugins/<name>/                   # one directory per plugin, full metadata in its plugin.json
 tests/fixtures/valid-plugin/      # canonical reference layout — copy this to start
 scripts/lint-marketplace.mjs      # structural linter (required CI check)
+scripts/build-index.mjs           # generates the catalog data from the files above
+site/                             # the catalog UI (React + Vite), published to GitHub Pages
 docs/                             # guidelines, releases, security, admin rollout
 ```
 
@@ -59,6 +66,7 @@ repository and the entry becomes `{"source": "github", "repo": "…"}`. Users do
 | [CONTRIBUTING.md](CONTRIBUTING.md) | The path from proposal to merged PR |
 | [docs/PLUGIN-GUIDELINES.md](docs/PLUGIN-GUIDELINES.md) | Naming, required structure, manifest fields, dependencies |
 | [docs/RELEASES.md](docs/RELEASES.md) | SemVer, tags, update, rollback |
+| [docs/SITE-SPEC.md](docs/SITE-SPEC.md) | The catalog site: data, screens, build, deploy |
 | [SECURITY.md](SECURITY.md) | Permissions, secrets, what to do about a dangerous release |
 | [docs/admin-rollout.md](docs/admin-rollout.md) | Fleet rollout and policy |
 
@@ -85,3 +93,22 @@ node scripts/lint-marketplace.mjs                       # structure, registry, v
 claude plugin validate ./plugins/<name> --strict        # manifest schema
 claude --plugin-dir ./plugins/<name>                    # load locally without installing
 ```
+
+## Running the catalog locally
+
+```bash
+cd site && npm install && npm run dev                   # http://localhost:5173
+```
+
+That regenerates the catalog data first, so it works in a fresh clone. After changing a
+plugin, re-run `npm run build:index` and refresh the browser — the site reads generated
+data, not the plugins directly, and nothing under `plugins/` hot-reloads.
+
+To check what will actually be published, build it the way CI does:
+
+```bash
+npm run build:index
+cd site && npm ci && npm run build && npm run preview   # http://localhost:4173
+```
+
+See [docs/SITE-SPEC.md](docs/SITE-SPEC.md) for both loops and the base-path gotcha.

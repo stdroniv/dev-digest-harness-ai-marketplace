@@ -21,6 +21,7 @@
 /.claude-plugin/marketplace.json    @<org>/platform-eng
 /.github/                           @<org>/platform-eng
 /scripts/                           @<org>/platform-eng
+/site/                              @<org>/platform-eng
 /tests/                             @<org>/platform-eng
 /CONTRIBUTING.md                    @<org>/platform-eng
 /SECURITY.md                        @<org>/platform-eng

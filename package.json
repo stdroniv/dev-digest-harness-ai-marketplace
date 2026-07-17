@@ -1,0 +1,11 @@
+{
+  "name": "dev-digest-harness-ai-marketplace",
+  "private": true,
+  "type": "module",
+  "description": "Tooling for the dev-digest-harness plugin marketplace. The plugins themselves have no build step and no dependencies.",
+  "scripts": {
+    "lint": "node scripts/lint-marketplace.mjs",
+    "build:index": "node scripts/build-index.mjs",
+    "check:index": "node scripts/build-index.mjs --check"
+  }
+}
