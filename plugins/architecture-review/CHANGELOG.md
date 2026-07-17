@@ -4,6 +4,16 @@ All notable changes to this plugin. Newest first. Every version bump needs an en
 the version string is what users receive, so this is the only place they can see what
 they got. See [docs/RELEASES.md](../../docs/RELEASES.md).
 
+## 1.0.1
+
+- Docs: the agent is dispatched as `architecture-review:architecture-reviewer`. A plugin
+  agent is namespaced by the plugin that ships it and there is no bare-name fallback, so
+  the `architecture-reviewer` the README told you to dispatch was rejected with
+  `Agent type 'architecture-reviewer' not found`.
+- The agent's own skill routing now names `engineering-paved-path:typescript-expert` in
+  full, and states that this is a soft if-present reference — `engineering-paved-path` is
+  not a dependency, so a missing-skill result there is a normal "not installed".
+
 ## 1.0.0
 
 - Initial release. Extracted from the DevDigest harness.

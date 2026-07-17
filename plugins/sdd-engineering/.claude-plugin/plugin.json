@@ -2,7 +2,7 @@
   "name": "sdd-engineering",
   "displayName": "SDD Engineering",
   "description": "Spec-driven development end to end: turn a feature request into an agreed spec, a verified plan, an implementation, and a review gate — with human approval at the two moments that matter. Install when features should ship through a repeatable pipeline rather than a single ad-hoc agent.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Platform Engineering",
     "email": "platform-eng@example.com"

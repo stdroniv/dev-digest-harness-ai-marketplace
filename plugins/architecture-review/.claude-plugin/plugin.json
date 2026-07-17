@@ -2,7 +2,7 @@
   "name": "architecture-review",
   "displayName": "Architecture Review",
   "description": "Read-only architectural review of code — layering, dependency direction, coupling, module boundaries, and where business logic belongs. Install when you want design problems named with a principle and a direction to move, rather than a list of nits.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Platform Engineering",
     "email": "platform-eng@example.com"

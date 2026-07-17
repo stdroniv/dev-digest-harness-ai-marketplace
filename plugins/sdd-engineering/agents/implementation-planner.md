@@ -45,16 +45,22 @@ feature actually touches. A task may have **no** matching skill — and may name
 — and skills the host has not installed simply do not apply; use the repository's own
 documented conventions instead.
 
-| The feature touches…                                     | Read these skills…                                             |
-|----------------------------------------------------------|----------------------------------------------------------------|
-| A Fastify route, plugin, hook, error handling            | `fastify-best-practices`                                       |
-| DB schema, queries, relations, migrations                | `drizzle-orm-patterns`, `postgresql-table-design`              |
-| Zod schemas / validation (params, body, contracts)       | `zod`                                                          |
-| Next.js pages, routing, RSC boundaries, data fetching    | `next-best-practices`                                          |
-| React components, hooks, state, performance              | `react-best-practices`                                        |
-| Test strategy for the plan (unit vs integration split)   | `react-testing-library`                                       |
-| Tricky TS types / generics / tooling                     | `typescript-expert`                                           |
-| A diagram in the plan                                    | `mermaid-diagram`                                             |
+**Always name a skill by its full `engineering-paved-path:<skill>` id**, exactly as
+written below — both when you read one and when you name it in a task's `Skills to
+use`. A plugin skill is namespaced by the plugin that ships it; a bare
+`typescript-expert` resolves against nothing and fails as a missing skill, and a plan
+that names one hands every downstream `implementer` the same broken id.
+
+| The feature touches…                                     | Read these skills…                                                                  |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------|
+| A Fastify route, plugin, hook, error handling            | `engineering-paved-path:fastify-best-practices`                                     |
+| DB schema, queries, relations, migrations                | `engineering-paved-path:drizzle-orm-patterns`, `engineering-paved-path:postgresql-table-design` |
+| Zod schemas / validation (params, body, contracts)       | `engineering-paved-path:zod`                                                        |
+| Next.js pages, routing, RSC boundaries, data fetching    | `engineering-paved-path:next-best-practices`                                        |
+| React components, hooks, state, performance              | `engineering-paved-path:react-best-practices`                                       |
+| Test strategy for the plan (unit vs integration split)   | `engineering-paved-path:react-testing-library`                                       |
+| Tricky TS types / generics / tooling                     | `engineering-paved-path:typescript-expert`                                          |
+| A diagram in the plan                                    | `engineering-paved-path:mermaid-diagram`                                            |
 
 ## You do NOT own the specification
 
@@ -157,10 +163,13 @@ already handed them to you, then follow the repository's own read-when routing (
 exactly what to load — follow it for the modules in scope, and don't read the rest
 speculatively). Use `Grep`/`Glob` to locate specific symbols, routes, or schema before
 reading — read only the relevant ranges. For heavy or open-ended discovery, delegate to
-the **`researcher`** subagent (Sonnet-tiered) so raw exploration stays out of your
-context and only the conclusion comes back. Prefer `researcher` over the built-in
-`Explore`, which inherits *this* agent's Opus tier — an Opus explorer for a broad file
-sweep is wasteful (see `skills/ship-feature/references/cost-discipline.md`).
+the **`research-tools:researcher`** subagent (Sonnet-tiered) so raw exploration stays out
+of your context and only the conclusion comes back — spell that id in full, since a bare
+`researcher` is rejected with `Agent type 'researcher' not found`. Prefer it over the
+built-in `Explore`, which inherits *this* agent's Opus tier — an Opus explorer for a broad
+file sweep is wasteful (see `skills/ship-feature/references/cost-discipline.md`). It ships
+in the `research-tools` plugin and may not be installed; if it is absent, fall back to
+`Explore` or your own `Read`/`Grep`/`Glob` rather than failing.
 
 If the repository keeps `INSIGHTS.md` files (or an equivalent gotcha log), read the
 one(s) for every module the plan touches and fold the relevant traps into the specific
