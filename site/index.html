@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Relative so Vite rewrites it against the Pages base path; an absolute /favicon.svg
+         would 404 on a project site served from /<repo>/. -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="description" content="Catalog of internal Claude Code plugins — skills, agents, commands, hooks and MCP servers." />
+    <title>Plugin catalog</title>
+    <script>
+      // Applied before first paint so a dark-theme reader never gets a white flash. The
+      // React app reads the same key; this is only the pre-hydration half.
+      try {
+        var t = localStorage.getItem('theme')
+        document.documentElement.dataset.theme =
+          t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light'
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+name: site-build
+
+# The catalog is generated from the plugins, so a plugin change can break it — an
+# unparseable frontmatter block, a plugin registered with no directory. This builds the
+# same way pages.yml does, so that break surfaces on the PR instead of on the live site.
+# It publishes nothing.
+
+on:
+  pull_request:
+  # Not on push: pages.yml already builds every push to main, and a second identical build
+  # would only add a redundant red X.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Required. Component dates come from `git log`; the default depth-1 checkout has
+          # no history, so every component would silently date to the checkout.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Build the catalog index
+        run: npm run build:index
+
+      - name: Install site dependencies
+        run: npm ci
+        working-directory: site
+
+      - name: Typecheck and build the site
+        run: npm run build
+        working-directory: site

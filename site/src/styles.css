@@ -1,0 +1,706 @@
+/* Both themes are driven by data-theme on <html>, set before first paint by the inline
+   script in index.html and toggled by lib/theme.ts. Every colour below is a token — no
+   component hard-codes one. */
+
+:root,
+:root[data-theme='light'] {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f2f3f7;
+  --border: #dfe1ea;
+  --text: #14161c;
+  --text-muted: #5b6172;
+  --accent: #3d4ee8;
+  --accent-contrast: #ffffff;
+  --mark: #fff2a8;
+  --shadow: 0 1px 2px rgb(20 22 28 / 6%), 0 8px 24px rgb(20 22 28 / 6%);
+}
+
+:root[data-theme='dark'] {
+  --bg: #0e1015;
+  --surface: #161922;
+  --surface-2: #1e2230;
+  --border: #2c3243;
+  --text: #e7e9f0;
+  --text-muted: #9aa1b4;
+  --accent: #8f9bff;
+  --accent-contrast: #0e1015;
+  --mark: #55480d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono,
+code,
+pre {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 1.9rem;
+  line-height: 1.25;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.02em;
+}
+h2 {
+  font-size: 1.2rem;
+  margin: 2rem 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+.small {
+  font-size: 0.85rem;
+}
+.center {
+  text-align: center;
+}
+.lede {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  background: var(--surface);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Layout ------------------------------------------------------------------ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  flex-wrap: wrap;
+}
+.topbar-links a {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.topbar-links a:hover {
+  color: var(--text);
+}
+
+.main {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 5rem;
+}
+
+/* Controls ---------------------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.button:hover {
+  background: var(--surface-2);
+}
+.button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.button[data-state='copied'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.icon-button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 0.25rem 0.45rem;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.icon-button:hover {
+  color: var(--text);
+}
+
+.hero-input,
+.palette-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.hero-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Home -------------------------------------------------------------------- */
+
+.hero {
+  text-align: center;
+  padding: 2rem 0 1rem;
+}
+.hero h1 {
+  font-size: 2.4rem;
+}
+.hero-desc {
+  color: var(--text-muted);
+  max-width: 52ch;
+  margin: 0 auto 1.5rem;
+}
+.hero-search {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 34rem;
+  margin: 0 auto 0.6rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 1.25rem 0;
+}
+.chip {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.chip:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+.chip[data-active='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+.chip-sm {
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 1rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+.stat:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+/* A zero counter is real information — it stays visible, just quieter. */
+.stat[data-empty='true'] {
+  opacity: 0.5;
+}
+.stat-n {
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.feed {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.feed li {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.feed li > a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text);
+}
+.feed time {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.feed p {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Search ------------------------------------------------------------------ */
+
+.search-page > .hero-input {
+  margin-bottom: 0.75rem;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.card {
+  display: block;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+.card:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.card-head h3 {
+  margin: 0;
+}
+.card-desc {
+  margin: 0.4rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.card-snippet {
+  margin: 0.5rem 0 0;
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+mark {
+  background: var(--mark);
+  color: inherit;
+  border-radius: 2px;
+}
+
+.badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.badge[data-type='plugin'] {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--accent);
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+/* Detail pages ------------------------------------------------------------ */
+
+.detail-head {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.detail-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.detail-head > .mono {
+  margin: 0 0 0.5rem;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+.fact dt {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.fact dd {
+  margin: 0.15rem 0 0;
+  font-weight: 550;
+}
+
+.command {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.6rem 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  margin: 0.5rem 0;
+}
+/* min-width:0 is what actually lets a flex child shrink: the default min-width:auto
+   floors it at its content width, so a long command widens the page instead of
+   scrolling inside its own box. Same reason it appears on .list and .palette-name. */
+.command code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  /* minmax(0, 1fr), not the 1fr default: a grid track sized `auto`/`1fr` floors at its
+     content width, so a long description would stretch the row — and the page — instead
+     of truncating. The same guard is on every grid of cards below. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.35rem;
+}
+.list li > a,
+.list-static {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  overflow: hidden;
+}
+.list li > a:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+.list .mono {
+  flex: none;
+}
+/* Descriptions here are a paragraph long; they truncate to one line rather than setting
+   the width of the page. */
+.list .muted {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Rendered repository Markdown. Sanitized in lib/markdown.ts before it gets here. */
+.prose {
+  max-width: 74ch;
+}
+.prose img {
+  max-width: 100%;
+}
+.prose pre {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  overflow-x: auto;
+}
+.prose > code,
+.prose p code,
+.prose li code,
+.prose td code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
+  background: var(--surface-2);
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+.prose blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--border);
+  color: var(--text-muted);
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.prose th {
+  background: var(--surface-2);
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.releases {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+.releases li {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.release-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.release-head h2 {
+  margin: 0;
+}
+.release-head time {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Command palette --------------------------------------------------------- */
+
+.palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgb(0 0 0 / 45%);
+  display: flex;
+  justify-content: center;
+  padding: 10vh 1rem 1rem;
+}
+.palette {
+  width: min(36rem, 100%);
+  height: fit-content;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.palette-input {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+}
+.palette-input:focus-visible {
+  outline-offset: -2px;
+}
+.palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+}
+.palette-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.palette-item[data-active='true'] {
+  background: var(--surface-2);
+}
+.palette-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.palette-empty,
+.palette-hint {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+.palette-hint {
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  .hero-search {
+    flex-direction: column;
+  }
+  .facts {
+    gap: 1rem;
+  }
+}
